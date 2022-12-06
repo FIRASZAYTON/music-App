@@ -23,17 +23,32 @@ class ViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void playMsic() async {
-    // await player.play();
+  // void playMsic() async {
+  //   print("play");
 
-    print("play");
-    playing = true;
-    notifyListeners();
-  }
+  //   playing = true;
+  //   await audioPlayer.play();
+  //   notifyListeners();
+  // }
 
-  void pauseMsic() async {
-    print("pause");
-    playing = false;
+  // void pauseMsic() async {
+  //   print("pause");
+
+  //   playing = false;
+  //   await audioPlayer.pause();
+  //   notifyListeners();
+  // }
+
+  void playPauseAudio(bool change) async {
+    if (change) {
+      audioPlayer.pause();
+      playing = false;
+      print("pause");
+    } else {
+      audioPlayer.play();
+      playing = true;
+      print("play");
+    }
     notifyListeners();
   }
 }

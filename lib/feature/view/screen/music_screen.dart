@@ -137,12 +137,20 @@ class MusicScreen extends StatelessWidget {
                       child: ContainerShadow(
                         hight: 60,
                         child: IconButton(
-                            onPressed: () async {
-                              provider.playing == true
-                                  ? provider.pauseMsic()
-                                  : provider.playMsic();
+                            onPressed: () {
+                              context.read<ViewModel>().playing!
+                                  ? context
+                                      .read<ViewModel>()
+                                      .playPauseAudio(true)
+                                  : context
+                                      .read<ViewModel>()
+                                      .playPauseAudio(false);
+                              // provider.playing == true
+                              //     ? provider.pauseMsic()
+                              //     : provider.playMsic();
                             },
-                            icon: provider.playing == true
+                            icon: context.read<ViewModel>().playing!
+                                //  provider.playing!
                                 ? Icon(
                                     Icons.pause,
                                     size: 30,
@@ -153,15 +161,17 @@ class MusicScreen extends StatelessWidget {
                                   )),
                       )),
                   Expanded(
-                      child: ContainerShadow(
-                          hight: 60,
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.skip_next,
-                              size: 30,
-                            ),
-                          ))),
+                    child: ContainerShadow(
+                      hight: 60,
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.skip_next,
+                          size: 30,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               )
             ],
