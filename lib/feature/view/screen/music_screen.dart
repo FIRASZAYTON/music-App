@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:ui_screen_project/feature/viewModel/view_model.dart';
 
@@ -11,7 +9,7 @@ class MusicScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<ViewModel>(context);
+    // var provider = Provider.of<ViewModel>(context);
     return ChangeNotifierProvider(
       create: (context) => ViewModel(),
       child: Scaffold(
@@ -94,7 +92,9 @@ class MusicScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text(
-                    "0:00",
+                    context
+                        .watch<ViewModel>()
+                        .timeMusic(context.watch<ViewModel>().position),
                     style: TextStyle(color: Colors.grey.shade600),
                   ),
                   Icon(
@@ -102,21 +102,40 @@ class MusicScreen extends StatelessWidget {
                     color: Colors.black,
                   ),
                   Icon(Icons.repeat, color: Colors.black),
-                  Text("4:22", style: TextStyle(color: Colors.grey.shade600)),
+                  Text(
+                      context
+                          .watch<ViewModel>()
+                          .timeMusic(context.watch<ViewModel>().duration),
+                      style: TextStyle(color: Colors.grey.shade600)),
                 ],
               ),
               SizedBox(
                 height: 25,
               ),
               ContainerShadow(
-                child: LinearPercentIndicator(
-                  backgroundColor: Colors.transparent,
-                  barRadius: Radius.circular(8),
-                  lineHeight: 10,
-                  percent: 0.2,
-                  progressColor: Colors.green,
-                ),
-              ),
+                  child: Slider(
+                      min: 0,
+                      max: context
+                          .read<ViewModel>()
+                          .duration
+                          .inSeconds
+                          .toDouble(),
+                      value: context
+                          .watch<ViewModel>()
+                          .position
+                          .inSeconds
+                          .toDouble(),
+                      onChanged: (value) {
+                        context.read<ViewModel>().changeValue(value);
+                      })
+                  //  LinearPercentIndicator(
+                  //   backgroundColor: Colors.transparent,
+                  //   barRadius: Radius.circular(8),
+                  //   lineHeight: 10,
+                  //   percent: 0.2,
+                  //   progressColor: Colors.green,
+                  // ),
+                  ),
               SizedBox(
                 height: 25,
               ),
@@ -138,13 +157,13 @@ class MusicScreen extends StatelessWidget {
                         hight: 60,
                         child: IconButton(
                             onPressed: () {
-                              context.read<ViewModel>().playing!
-                                  ? context
-                                      .read<ViewModel>()
-                                      .playPauseAudio(true)
-                                  : context
-                                      .read<ViewModel>()
-                                      .playPauseAudio(false);
+                              if (context.read<ViewModel>().playing!) {
+                                context.read<ViewModel>().playPauseAudio(true);
+                              } else {
+                                context.read<ViewModel>().playPauseAudio(false);
+                                context.read<ViewModel>().sliderMusic();
+                              }
+
                               // provider.playing == true
                               //     ? provider.pauseMsic()
                               //     : provider.playMsic();
