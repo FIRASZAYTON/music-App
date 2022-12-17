@@ -23,16 +23,13 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => ViewModel(),
+      create: (context) => ViewModel()..getSongList(),
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light(),
           themeMode: ThemeMode.system,
           darkTheme: ThemeData.dark(),
-          home: ChangeNotifierProvider(
-            create: (context) => ViewModel(),
-            child: SplashScreen(),
-          )),
+          home: SplashScreen()),
     );
   }
 }

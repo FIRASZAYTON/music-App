@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import 'package:ui_screen_project/feature/view/screen/music_screen.dart';
+import 'package:ui_screen_project/feature/view/screen/playList_screen.dart';
 
 import '../../viewModel/view_model.dart';
 import '../widget/custom_Painter.dart';
@@ -49,7 +49,7 @@ class _PageViewScreenState extends State<PageViewScreen> {
 
                     Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => MusicScreen()),
+                        MaterialPageRoute(builder: (context) => PlayList()),
                         (route) => false);
                   },
                   icon: Icon(Icons.start_sharp),

@@ -1,14 +1,24 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ViewModel extends ChangeNotifier {
+  List<FileSystemEntity> arraySongs = [];
+
+  List<String> fileName = [];
+  final audioPlayerStorage = AudioPlayer();
   final audioPlayer = AudioPlayer()..setAsset("assets/music_audio.mp3");
   Duration position = Duration.zero;
   Duration duration = Duration.zero;
 
   bool? repeat;
   bool? playing = false;
+  bool? loop = false;
+  bool? shuffle = false;
+  bool? addToFavorit = false;
 
   void setDataInSharedPrefrences() async {
     print("repeat");
@@ -26,20 +36,42 @@ class ViewModel extends ChangeNotifier {
 
   void playPauseAudio(bool change) async {
     if (change) {
-      audioPlayer.pause();
+      audioPlayerStorage.pause();
       playing = false;
       print("pause");
     } else {
-      audioPlayer.play();
+      audioPlayerStorage.play();
       playing = true;
       print("play");
     }
     notifyListeners();
   }
 
+  void loopMode(bool change) async {
+    if (change) {
+      audioPlayerStorage.setLoopMode(LoopMode.off);
+      loop = true;
+    } else {
+      audioPlayerStorage.setLoopMode(LoopMode.all);
+      loop = false;
+    }
+    notifyListeners();
+  }
+
+  void shuffleMode(bool change) async {
+    if (change) {
+      audioPlayerStorage.setShuffleModeEnabled(false);
+      shuffle = true;
+    } else {
+      audioPlayerStorage.setShuffleModeEnabled(true);
+      shuffle = false;
+    }
+    notifyListeners();
+  }
+
   void sliderMusic() async {
-    duration = await audioPlayer.duration!;
-    audioPlayer.positionStream.listen((event) {
+    duration = await audioPlayerStorage.duration!;
+    audioPlayerStorage.positionStream.listen((event) {
       print("time");
       if (event != null) {
         Duration temp = event;
@@ -59,8 +91,51 @@ class ViewModel extends ChangeNotifier {
 
   void changeValue(double value) {
     final seekPosition = Duration(seconds: value.toInt());
-    audioPlayer.seek(seekPosition);
+    audioPlayerStorage.seek(seekPosition);
     notifyListeners();
-  } 
+  }
+
+  void getSongList() async {
+    await Permission.manageExternalStorage.request();
+    await Permission.storage.request();
+    // Directory directory =
+    // Directory('/phone/internal storage/snaptube/download/SnapTube Audio');
+    Directory directory = Directory('/storage/emulated/0/Download');
+    // String mp3Path = directory.toString();
+    List<FileSystemEntity> _file;
+    _file = directory.listSync(followLinks: false, recursive: true);
+    for (FileSystemEntity entity in _file) {
+      String path = entity.path;
+      if (path.endsWith('.mp3')) {
+        arraySongs.add(entity);
+      }
+    }
+    for (var i = 0; i < arraySongs.length; i++) {
+      fileName.add(File(arraySongs[i].path).uri.pathSegments.last);
+    }
+    notifyListeners();
+  }
+
+  void playMusicFromStorage(FileSystemEntity fileSystemEntity) {
+    audioPlayerStorage.setUrl(fileSystemEntity.path);
+  }
+
+  void addMusicTofavorit(bool add) {
+    if (add) {
+      addToFavorit = true;
+    } else {
+      addToFavorit = false;
+    }
+    notifyListeners();
+  }
+
+  seek() async {
+    // audioPlayerStorage.stop();
+
+    await audioPlayerStorage.seekToNext();
+    // await audioPlayerStorage.play();
+    notifyListeners();
+  }
 }
 // https://www.youtube.com/watch?v=LZ3baC5esJc
+//https://www.youtube.com/@suprimpoudel6070

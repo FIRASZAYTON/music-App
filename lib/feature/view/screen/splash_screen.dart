@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import 'package:ui_screen_project/feature/view/screen/music_screen.dart';
 import 'package:ui_screen_project/feature/view/screen/page_view.dart';
+import 'package:ui_screen_project/feature/view/screen/playList_screen.dart';
 import 'package:ui_screen_project/feature/viewModel/view_model.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -67,6 +67,8 @@ class _SplashScreenState extends State<SplashScreen>
                 onLoaded: (composition) {
                   _controller
                     ..duration = composition.duration
+                    // ..isAnimating;
+                    // ..dispose();
                     ..forward();
                 },
               ),
@@ -95,13 +97,11 @@ class _SplashScreenState extends State<SplashScreen>
       Provider.of<ViewModel>(context, listen: false).repeat == true
           ? Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => MusicScreen()
+              MaterialPageRoute(builder: (context) => PlayList()
                   //  MusicScreen(),
                   ))
-          : Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => PageViewScreen()
-                  ));
+          : Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => PageViewScreen()));
     });
   }
 }

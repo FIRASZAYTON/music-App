@@ -1,132 +1,220 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:ui_screen_project/feature/viewModel/view_model.dart';
 
 import '../widget/container_shadow.dart';
 
-class MusicScreen extends StatelessWidget {
-  const MusicScreen({Key? key}) : super(key: key);
+class MusicScreen extends StatefulWidget {
+  int? index;
+  MusicScreen({required this.index});
+
+  @override
+  State<MusicScreen> createState() => _MusicScreenState();
+}
+
+class _MusicScreenState extends State<MusicScreen>
+    with TickerProviderStateMixin {
+  late final AnimationController _controller;
+  @override
+  void initState() {
+    _controller = AnimationController(
+        animationBehavior: AnimationBehavior.preserve,
+
+        // duration: Duration(milliseconds: 10000),
+        vsync: this);
+    super.initState();
+  }
+
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    double widthMedia = MediaQuery.of(context).size.width;
+    double hightMedia = MediaQuery.of(context).size.height;
     // var provider = Provider.of<ViewModel>(context);
-    return ChangeNotifierProvider(
-      create: (context) => ViewModel(),
-      child: Scaffold(
-        backgroundColor: Colors.grey[300],
-        body: SafeArea(
-            child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+    var providerRead = context.read<ViewModel>();
+    var providerWatch = context.watch<ViewModel>();
+    return Scaffold(
+      backgroundColor: Colors.grey[300],
+      body: SafeArea(
+          child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 8,
+        ),
+        child: SingleChildScrollView(
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ContainerShadow(
-                    hight: 60,
-                    width: 60,
-                    child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.arrow_back_ios_new,
-                        )),
-                  ),
-                  Text(
-                    "P L A Y L I S T",
-                    style: TextStyle(fontWeight: FontWeight.normal),
-                  ),
-                  ContainerShadow(
-                    hight: 60,
-                    width: 60,
-                    child: IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
-                  ),
-                ],
+              SizedBox(
+                height: hightMedia * 0.10,
+                width: widthMedia,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ContainerShadow(
+                      child: IconButton(
+                          onPressed: () {},
+                          icon: Icon(FontAwesomeIcons.chevronLeft)),
+                    ),
+                    SizedBox(
+                      // width: widthMedia * 0.30,
+                      child: Text(
+                        "M U S I C A N O",
+                        style: TextStyle(fontWeight: FontWeight.normal),
+                      ),
+                    ),
+                    ContainerShadow(
+                      child: IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(FontAwesomeIcons.bars),
+                      ),
+                    )
+                  ],
+                ),
               ),
               SizedBox(
-                height: 15,
-                width: double.minPositive,
+                height: hightMedia * 0.02,
               ),
               ContainerShadow(
+                  hight: hightMedia * 0.40,
+                  width: widthMedia,
                   child: Column(
-                children: [
-                  ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.asset("images/cover_art.png")),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          decoration: BoxDecoration(
+
+                              // image: DecorationImage(
+                              //     fit: BoxFit.cover,
+                              //     image:
+                              //         AssetImage("images/playList_music_2.jpg")),
+                              // borderRadius: BorderRadius.circular(20),
+                              ),
+                          width: widthMedia,
+                          height: hightMedia * 0.3,
+                          child: Lottie.asset('images/image7.json',
+                              reverse: true,
+                              repeat: true,
+                              fit: BoxFit.contain,
+                              width: widthMedia * 0.2,
+                              height: hightMedia * 0.2,
+                              controller:
+                                  providerRead.playing! ? null : _controller),
+                        ),
+                      ),
+                      SizedBox(
+                        height: hightMedia * 0.02,
+                      ),
+                      SizedBox(
+                        height: widthMedia * 0.08,
+                        width: widthMedia,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              "Kota The Friend",
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 129, 128, 128)),
+                            Expanded(
+                              flex: 5,
+                              child: Text(
+                                providerRead.fileName[widget.index!],
+                                // maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    color: Color.fromARGB(255, 129, 128, 128)),
+                              ),
                             ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              "Birdie",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20),
+                            Expanded(
+                              child: IconButton(
+                                icon: providerRead.addToFavorit!
+                                    ? Icon(
+                                        FontAwesomeIcons.solidHeart,
+                                        color: Colors.red,
+                                        size: 28,
+                                      )
+                                    : Icon(
+                                        FontAwesomeIcons.heart,
+                                        color: Colors.red,
+                                        size: 28,
+                                      ),
+                                onPressed: () {
+                                  providerRead.addToFavorit!
+                                      ? providerRead.addMusicTofavorit(false)
+                                      : providerRead.addMusicTofavorit(true);
+                                },
+                              ),
                             ),
                           ],
                         ),
-                        Icon(
-                          Icons.favorite,
-                          color: Colors.red,
-                          size: 30,
-                        ),
-                      ],
+                      ),
+                    ],
+                  )),
+              /////////////////////////////////////////////
+              SizedBox(
+                height: hightMedia * 0.02,
+              ),
+              /////////////////////////////////////////////////
+              SizedBox(
+                height: hightMedia * 0.1,
+                width: widthMedia,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      providerWatch.timeMusic(providerWatch.position),
+                      style: TextStyle(color: Colors.grey.shade600),
                     ),
-                  ),
-                ],
-              )),
+                    IconButton(
+                        onPressed: () {
+                          providerRead.shuffle!
+                              ? providerRead.shuffleMode(false)
+                              : providerRead.shuffleMode(true);
+                        },
+                        icon: providerWatch.shuffle!
+                            ? Icon(FontAwesomeIcons.shuffle)
+                            : Icon(
+                                FontAwesomeIcons.shuffle,
+                                color: Colors.grey,
+                              )),
+                    IconButton(
+                        onPressed: () {
+                          providerRead.loop!
+                              ? providerRead.loopMode(false)
+                              : providerRead.loopMode(true);
+                        },
+                        icon: providerWatch.loop!
+                            ? Icon(FontAwesomeIcons.repeat)
+                            : Icon(
+                                FontAwesomeIcons.repeat,
+                                color: Colors.grey,
+                              )),
+                    Text(providerWatch.timeMusic(providerWatch.duration),
+                        style: TextStyle(color: Colors.grey.shade600)),
+                  ],
+                ),
+              ),
+              //////////////////////////////////////////////////
               SizedBox(
-                height: 25,
+                height: hightMedia * 0.02,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    context
-                        .watch<ViewModel>()
-                        .timeMusic(context.watch<ViewModel>().position),
-                    style: TextStyle(color: Colors.grey.shade600),
-                  ),
-                  Icon(
-                    Icons.shuffle,
-                    color: Colors.black,
-                  ),
-                  Icon(Icons.repeat, color: Colors.black),
-                  Text(
-                      context
-                          .watch<ViewModel>()
-                          .timeMusic(context.watch<ViewModel>().duration),
-                      style: TextStyle(color: Colors.grey.shade600)),
-                ],
-              ),
-              SizedBox(
-                height: 25,
-              ),
+              ///////////////////////////////////////////////////
               ContainerShadow(
+                  hight: hightMedia * 0.1,
+                  width: widthMedia,
                   child: Slider(
+                      activeColor: Colors.green,
+                      inactiveColor: Colors.green[200],
                       min: 0,
-                      max: context
-                          .read<ViewModel>()
-                          .duration
-                          .inSeconds
-                          .toDouble(),
-                      value: context
-                          .watch<ViewModel>()
-                          .position
-                          .inSeconds
-                          .toDouble(),
+                      max: providerRead.duration.inSeconds.toDouble(),
+                      value: providerWatch.position.inSeconds.toDouble(),
                       onChanged: (value) {
-                        context.read<ViewModel>().changeValue(value);
+                        providerRead.changeValue(value);
                       })
                   //  LinearPercentIndicator(
                   //   backgroundColor: Colors.transparent,
@@ -136,67 +224,72 @@ class MusicScreen extends StatelessWidget {
                   //   progressColor: Colors.green,
                   // ),
                   ),
-              SizedBox(
-                height: 25,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: ContainerShadow(
-                        hight: 60,
-                        child: IconButton(
-                            onPressed: (() {}),
-                            icon: Icon(
-                              Icons.skip_previous,
-                              size: 30,
-                            ))),
-                  ),
-                  Expanded(
-                      flex: 2,
-                      child: ContainerShadow(
-                        hight: 60,
-                        child: IconButton(
-                            onPressed: () {
-                              if (context.read<ViewModel>().playing!) {
-                                context.read<ViewModel>().playPauseAudio(true);
-                              } else {
-                                context.read<ViewModel>().playPauseAudio(false);
-                                context.read<ViewModel>().sliderMusic();
-                              }
+              //////////////////////////////////////////////////
 
-                              // provider.playing == true
-                              //     ? provider.pauseMsic()
-                              //     : provider.playMsic();
-                            },
-                            icon: context.read<ViewModel>().playing!
-                                //  provider.playing!
-                                ? Icon(
-                                    Icons.pause,
-                                    size: 30,
-                                  )
-                                : Icon(
-                                    Icons.play_arrow,
-                                    size: 30,
-                                  )),
-                      )),
-                  Expanded(
-                    child: ContainerShadow(
-                      hight: 60,
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.skip_next,
-                          size: 30,
+              SizedBox(
+                height: hightMedia * 0.03,
+              ),
+              //////////////////////////////////////////////////////
+              SizedBox(
+                height: hightMedia * 0.1,
+                width: widthMedia,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ContainerShadow(
+                          // hight: hightMedia * 0.10,
+                          child: IconButton(
+                              onPressed: (() {}),
+                              icon: Icon(FontAwesomeIcons.backwardStep))),
+                    ),
+                    SizedBox(
+                      width: widthMedia * 0.05,
+                    ),
+                    Expanded(
+                        flex: 2,
+                        child: ContainerShadow(
+                          // hight: hightMedia * 0.10,
+                          child: IconButton(
+                              onPressed: () {
+                                if (providerRead.playing!) {
+                                  providerRead.playPauseAudio(true);
+                                } else {
+                                  providerRead.playPauseAudio(false);
+                                  providerRead.sliderMusic();
+                                }
+
+                                // provider.playing == true
+                                //     ? provider.pauseMsic()
+                                //     : provider.playMsic();
+                              },
+                              icon: providerRead.playing!
+                                  //  provider.playing!
+                                  ? Icon(FontAwesomeIcons.pause)
+                                  : Icon(FontAwesomeIcons.play)),
+                        )),
+                    SizedBox(
+                      width: widthMedia * 0.05,
+                    ),
+                    Expanded(
+                      child: ContainerShadow(
+                        // hight: hightMedia * 0.10,
+                        child: IconButton(
+                          onPressed: () async {
+                            widget.index = widget.index! + 1;
+                            await providerRead.seek();
+                            print(widget.index);
+                          },
+                          icon: Icon(FontAwesomeIcons.forwardStep),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               )
             ],
           ),
-        )),
-      ),
+        ),
+      )),
     );
   }
 }
