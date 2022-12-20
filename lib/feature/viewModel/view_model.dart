@@ -1,12 +1,19 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../view/screen/playList_screen.dart';
+
 class ViewModel extends ChangeNotifier {
+  final OnAudioQuery audioQuery = OnAudioQuery();
+  List<SongModel> songs = [];
   List<FileSystemEntity> arraySongs = [];
+  String currentSongTitle = '';
+  int currentIndex = 0;
 
   List<String> fileName = [];
   final audioPlayerStorage = AudioPlayer();
@@ -71,7 +78,15 @@ class ViewModel extends ChangeNotifier {
   }
 
   void sliderMusic() async {
-    duration = audioPlayerStorage.duration!;
+    audioPlayerStorage.durationStream.listen((event) {
+      if (event != null) {
+        Duration temp = event;
+        duration = temp;
+        notifyListeners();
+      }
+    });
+    // duration = await audioPlayerStorage.duration!;
+
     audioPlayerStorage.positionStream.listen((event) {
       print("time");
       if (event != null) {
@@ -96,33 +111,20 @@ class ViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getSongList() async {
-    await Permission.manageExternalStorage.request();
-    await Permission.storage.request();
-    // Directory? directory = await getLibraryDirectory();
-
-    Directory directory = Directory('/storage/emulated/0/Download');
-    // String mp3Path = directory.toString();
-    List<FileSystemEntity> _file;
-    _file = directory.listSync(recursive: true, followLinks: false);
-    for (FileSystemEntity entity in _file) {
-      String path = entity.path;
-      print("{$path}ddddddddddddddddddddddddddddddd");
-      if (path.endsWith('.mp3')) {
-        arraySongs.add(entity);
-        print("${arraySongs.length}................");
+  void requestStoragePermission(BuildContext context) async {
+    //only if the platform is not web, coz web have no permissions
+    if (!kIsWeb) {
+      bool permissionStatus = await audioQuery.permissionsStatus();
+      if (!permissionStatus) {
+        await audioQuery.permissionsRequest().then((value) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => PlayList()),
+              (route) => false);
+        });
       }
     }
-    for (var i = 0; i < arraySongs.length; i++) {
-      fileName.add(File(arraySongs[i].path).uri.pathSegments.last);
-    }
     notifyListeners();
-  }
-
-  void playMusicFromStorage(FileSystemEntity fileSystemEntity) {
-    audioPlayerStorage.setUrl(fileSystemEntity.path);
-
-    // audioPlayerStorage.setAudioSource(source);
   }
 
   void addMusicTofavorit(bool add) {
@@ -134,12 +136,37 @@ class ViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  seek() async {
-    // audioPlayerStorage.stop();
-
+  seekToNext() async {
     await audioPlayerStorage.seekToNext();
-    // await audioPlayerStorage.play();
     notifyListeners();
+  }
+
+  seekToPrevious() async {
+    await audioPlayerStorage.seekToPrevious();
+    notifyListeners();
+  }
+
+  ConcatenatingAudioSource createPlaylist(List<SongModel> songs) {
+    List<AudioSource> sources = [];
+    for (var song in songs) {
+      sources.add(AudioSource.uri(Uri.parse(song.uri!)));
+    }
+
+    return ConcatenatingAudioSource(children: sources);
+  }
+
+  audioSourcePlayList(List<SongModel> songs, int index) {
+    audioPlayerStorage.setAudioSource(createPlaylist(songs),
+        initialIndex: index);
+
+    notifyListeners();
+  }
+
+  void updateCurrentPlayingSongDetails(int index) {
+    if (songs.isNotEmpty) {
+      currentSongTitle = songs[index].title;
+      currentIndex = index;
+    }
   }
 }
 // https://www.youtube.com/watch?v=LZ3baC5esJc

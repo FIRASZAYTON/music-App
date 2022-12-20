@@ -94,14 +94,16 @@ class _SplashScreenState extends State<SplashScreen>
   void goToNextPage() {
     Provider.of<ViewModel>(context, listen: false).goToNextPage();
     Future.delayed(Duration(milliseconds: 2200), () {
-      Provider.of<ViewModel>(context, listen: false).repeat == true
-          ? Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => PlayList()
-                  //  MusicScreen(),
-                  ))
-          : Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => PageViewScreen()));
+      if (Provider.of<ViewModel>(context, listen: false).repeat == true) {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => PlayList()
+                //  MusicScreen(),
+                ));
+      } else {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => PageViewScreen()));
+      }
     });
   }
 }

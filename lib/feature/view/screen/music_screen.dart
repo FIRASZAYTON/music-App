@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 import 'package:ui_screen_project/feature/viewModel/view_model.dart';
 
 import '../widget/container_shadow.dart';
 
 class MusicScreen extends StatefulWidget {
-  int? index;
-  MusicScreen({required this.index});
+  List<SongModel> songs;
+  MusicScreen({required this.songs});
 
   @override
   State<MusicScreen> createState() => _MusicScreenState();
@@ -19,11 +20,18 @@ class _MusicScreenState extends State<MusicScreen>
   late final AnimationController _controller;
   @override
   void initState() {
+    context
+        .read<ViewModel>()
+        .audioPlayerStorage
+        .currentIndexStream
+        .listen((index) {
+      if (index != null) {
+        context.read<ViewModel>().updateCurrentPlayingSongDetails(index);
+      }
+    });
     _controller = AnimationController(
-        animationBehavior: AnimationBehavior.preserve,
+        animationBehavior: AnimationBehavior.preserve, vsync: this);
 
-        // duration: Duration(milliseconds: 10000),
-        vsync: this);
     super.initState();
   }
 
@@ -36,7 +44,7 @@ class _MusicScreenState extends State<MusicScreen>
   Widget build(BuildContext context) {
     double widthMedia = MediaQuery.of(context).size.width;
     double hightMedia = MediaQuery.of(context).size.height;
-    // var provider = Provider.of<ViewModel>(context);
+
     var providerRead = context.read<ViewModel>();
     var providerWatch = context.watch<ViewModel>();
     return Scaffold(
@@ -122,8 +130,8 @@ class _MusicScreenState extends State<MusicScreen>
                             Expanded(
                               flex: 5,
                               child: Text(
-                                providerRead.fileName[widget.index!],
-                                // maxLines: 1,
+                                widget.songs[providerRead.currentIndex].title,
+                                maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     fontSize: 18,
@@ -215,15 +223,7 @@ class _MusicScreenState extends State<MusicScreen>
                       value: providerWatch.position.inSeconds.toDouble(),
                       onChanged: (value) {
                         providerRead.changeValue(value);
-                      })
-                  //  LinearPercentIndicator(
-                  //   backgroundColor: Colors.transparent,
-                  //   barRadius: Radius.circular(8),
-                  //   lineHeight: 10,
-                  //   percent: 0.2,
-                  //   progressColor: Colors.green,
-                  // ),
-                  ),
+                      })),
               //////////////////////////////////////////////////
 
               SizedBox(
@@ -240,21 +240,8 @@ class _MusicScreenState extends State<MusicScreen>
                           // hight: hightMedia * 0.10,
                           child: IconButton(
                               onPressed: (() {
-                                if (widget.index == 0) {
-                                  widget.index = 0;
-                                  context
-                                      .read<ViewModel>()
-                                      .playMusicFromStorage(context
-                                          .read<ViewModel>()
-                                          .arraySongs[0]);
-                                } else {
-                                  widget.index = widget.index! - 1;
-                                  context
-                                      .read<ViewModel>()
-                                      .playMusicFromStorage(context
-                                          .read<ViewModel>()
-                                          .arraySongs[widget.index!]);
-                                }
+                                // widget.index = widget.index! - 1;
+                                providerRead.seekToPrevious();
                               }),
                               icon: Icon(FontAwesomeIcons.backward))),
                     ),
@@ -271,7 +258,7 @@ class _MusicScreenState extends State<MusicScreen>
                                   providerRead.playPauseAudio(true);
                                 } else {
                                   providerRead.playPauseAudio(false);
-                                  providerRead.sliderMusic();
+                                  // providerRead.sliderMusic();
                                 }
 
                                 // provider.playing == true
@@ -291,18 +278,8 @@ class _MusicScreenState extends State<MusicScreen>
                         // hight: hightMedia * 0.10,
                         child: IconButton(
                           onPressed: () async {
-                            if (widget.index ==
-                                providerRead.arraySongs.length - 1) {
-                              widget.index = 0;
-                              context.read<ViewModel>().playMusicFromStorage(
-                                  context.read<ViewModel>().arraySongs[0]);
-                            } else {
-                              widget.index = widget.index! + 1;
-                              context.read<ViewModel>().playMusicFromStorage(
-                                  context
-                                      .read<ViewModel>()
-                                      .arraySongs[widget.index!]);
-                            }
+                            // widget.index = widget.index! + 1;
+                            providerRead.seekToNext();
                           },
                           icon: Icon(FontAwesomeIcons.forward),
                         ),

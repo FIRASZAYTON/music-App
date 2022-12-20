@@ -21,6 +21,7 @@ class _PageViewScreenState extends State<PageViewScreen> {
   @override
   void initState() {
     isCurrentIndex = 0;
+
     // print(isCurrentIndex);
     super.initState();
   }
@@ -44,13 +45,9 @@ class _PageViewScreenState extends State<PageViewScreen> {
                   borderRadius: BorderRadiusDirectional.circular(12)),
               child: Consumer<ViewModel>(
                 builder: (context, value, child) => IconButton(
-                  onPressed: () {
+                  onPressed: () async {
                     value.setDataInSharedPrefrences();
-
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => PlayList()),
-                        (route) => false);
+                    context.read<ViewModel>().requestStoragePermission(context);
                   },
                   icon: Icon(Icons.start_sharp),
                   color: Colors.black87,

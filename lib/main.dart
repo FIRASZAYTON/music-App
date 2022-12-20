@@ -23,7 +23,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => ViewModel()..getSongList(),
+      create: (context) => ViewModel(),
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light(),
