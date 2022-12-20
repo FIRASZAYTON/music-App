@@ -29,10 +29,11 @@ class PlayList extends StatelessWidget {
               onTap: () async {
                 context.read<ViewModel>().playMusicFromStorage(
                     context.read<ViewModel>().arraySongs[index]);
+
                 print(index);
 
                 // context.read<ViewModel>().playPauseAudio(false);
-                Navigator.push(
+                await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => MusicScreen(

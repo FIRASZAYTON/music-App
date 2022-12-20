@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,6 +42,7 @@ class ViewModel extends ChangeNotifier {
       print("pause");
     } else {
       audioPlayerStorage.play();
+
       playing = true;
       print("play");
     }
@@ -70,7 +72,7 @@ class ViewModel extends ChangeNotifier {
   }
 
   void sliderMusic() async {
-    duration = await audioPlayerStorage.duration!;
+    duration = audioPlayerStorage.duration!;
     audioPlayerStorage.positionStream.listen((event) {
       print("time");
       if (event != null) {
@@ -98,16 +100,18 @@ class ViewModel extends ChangeNotifier {
   void getSongList() async {
     await Permission.manageExternalStorage.request();
     await Permission.storage.request();
-    // Directory directory =
-    // Directory('/phone/internal storage/snaptube/download/SnapTube Audio');
+    // Directory? directory = await getLibraryDirectory();
+
     Directory directory = Directory('/storage/emulated/0/Download');
     // String mp3Path = directory.toString();
     List<FileSystemEntity> _file;
-    _file = directory.listSync(followLinks: false, recursive: true);
+    _file = directory.listSync(recursive: true, followLinks: false);
     for (FileSystemEntity entity in _file) {
       String path = entity.path;
+      print("{$path}ddddddddddddddddddddddddddddddd");
       if (path.endsWith('.mp3')) {
         arraySongs.add(entity);
+        print("${arraySongs.length}................");
       }
     }
     for (var i = 0; i < arraySongs.length; i++) {
@@ -118,6 +122,8 @@ class ViewModel extends ChangeNotifier {
 
   void playMusicFromStorage(FileSystemEntity fileSystemEntity) {
     audioPlayerStorage.setUrl(fileSystemEntity.path);
+
+    // audioPlayerStorage.setAudioSource(source);
   }
 
   void addMusicTofavorit(bool add) {

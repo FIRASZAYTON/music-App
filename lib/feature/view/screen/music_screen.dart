@@ -239,8 +239,24 @@ class _MusicScreenState extends State<MusicScreen>
                       child: ContainerShadow(
                           // hight: hightMedia * 0.10,
                           child: IconButton(
-                              onPressed: (() {}),
-                              icon: Icon(FontAwesomeIcons.backwardStep))),
+                              onPressed: (() {
+                                if (widget.index == 0) {
+                                  widget.index = 0;
+                                  context
+                                      .read<ViewModel>()
+                                      .playMusicFromStorage(context
+                                          .read<ViewModel>()
+                                          .arraySongs[0]);
+                                } else {
+                                  widget.index = widget.index! - 1;
+                                  context
+                                      .read<ViewModel>()
+                                      .playMusicFromStorage(context
+                                          .read<ViewModel>()
+                                          .arraySongs[widget.index!]);
+                                }
+                              }),
+                              icon: Icon(FontAwesomeIcons.backward))),
                     ),
                     SizedBox(
                       width: widthMedia * 0.05,
@@ -275,11 +291,20 @@ class _MusicScreenState extends State<MusicScreen>
                         // hight: hightMedia * 0.10,
                         child: IconButton(
                           onPressed: () async {
-                            widget.index = widget.index! + 1;
-                            await providerRead.seek();
-                            print(widget.index);
+                            if (widget.index ==
+                                providerRead.arraySongs.length - 1) {
+                              widget.index = 0;
+                              context.read<ViewModel>().playMusicFromStorage(
+                                  context.read<ViewModel>().arraySongs[0]);
+                            } else {
+                              widget.index = widget.index! + 1;
+                              context.read<ViewModel>().playMusicFromStorage(
+                                  context
+                                      .read<ViewModel>()
+                                      .arraySongs[widget.index!]);
+                            }
                           },
-                          icon: Icon(FontAwesomeIcons.forwardStep),
+                          icon: Icon(FontAwesomeIcons.forward),
                         ),
                       ),
                     ),
