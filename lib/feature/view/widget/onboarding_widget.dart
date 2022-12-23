@@ -10,18 +10,18 @@ class InboardingModel {
   });
   static List<InboardingModel> tab = [
     InboardingModel(
-      title: "Welcam To Music app",
-      subTitle: "wwwwwwwwwwwewewqqwqw",
-      lottieFile: 'images/image1.json',
+      title: "M U S I C A N O",
+      subTitle: "Welcam To our app",
+      lottieFile: 'images/image5.json',
     ),
     InboardingModel(
-      title: "title",
-      subTitle: "subTitle",
+      title: "M U S I C A N O",
+      subTitle: "Enjoy listening to music",
       lottieFile: 'images/image2.json',
     ),
     InboardingModel(
-      title: "title",
-      subTitle: "subTitle",
+      title: "M U S I C A N O",
+      subTitle: "Take comfort with us",
       lottieFile: 'images/image3.json',
     ),
   ];

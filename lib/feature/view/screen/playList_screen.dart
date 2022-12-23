@@ -15,111 +15,115 @@ class PlayList extends StatelessWidget {
     var providerRead = context.read<ViewModel>();
     var providerWatch = context.watch<ViewModel>();
     return Scaffold(
-      backgroundColor: Colors.grey[300],
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-        title: Text(
-          "P L A Y L I S T",
-          style: TextStyle(fontWeight: FontWeight.normal),
-        ),
-      ),
-      body: FutureBuilder<List<SongModel>>(
-          future: providerRead.audioQuery.querySongs(
-            orderType: OrderType.ASC_OR_SMALLER,
-            uriType: UriType.EXTERNAL,
-            ignoreCase: true,
-          ),
-          builder: (context, item) {
-            if (item.data == null) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            if (item.data!.isEmpty) {
-              return const Center(
-                child: Text("No Songs Found"),
-              );
-            }
-            // providerWatch.songs.clear();
-            providerRead.songs = item.data!;
+      backgroundColor: Colors.grey[400],
+      // appBar: AppBar(
+      //   backgroundColor: Colors.transparent.withOpacity(0.5),
+      //   centerTitle: true,
+      //   title: Text(
+      //     "P L A Y L I S T",
+      //     style: TextStyle(fontWeight: FontWeight.normal),
+      //   ),
+      // ),
+      body: SafeArea(
+        child: FutureBuilder<List<SongModel>>(
+            future: providerRead.audioQuery.querySongs(
+              orderType: OrderType.ASC_OR_SMALLER,
+              uriType: UriType.EXTERNAL,
+              ignoreCase: true,
+            ),
+            builder: (context, item) {
+              if (item.data == null) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (item.data!.isEmpty) {
+                return const Center(
+                  child: Text("No Songs Found"),
+                );
+              }
+              // providerWatch.songs.clear();
+              providerRead.songs = item.data!;
 
-            return ListView.separated(
-                shrinkWrap: true,
-                itemBuilder: ((context1, index) {
-                  return InkWell(
-                    onTap: () async {
-                      print(index);
-                      // Toast.toast(
-                      //     context, "Playing:  " + item.data![index].title);
-                      providerRead.audioSourcePlayList(item.data!, index);
+              return ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: ((context1, index) {
+                    return InkWell(
+                      onTap: () async {
+                        print(index);
+                        // Toast.toast(
+                        //     context, "Playing:  " + item.data![index].title);
+                        providerRead.audioSourcePlayList(item.data!, index);
 
-                      providerRead.playPauseAudio(false);
-                      providerRead.playing! ? providerRead.sliderMusic() : null;
+                        providerRead.playPauseAudio(false);
+                        providerRead.playing!
+                            ? providerRead.sliderMusic()
+                            : null;
 
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MusicScreen(
-                              songs: providerRead.songs,
-                            ),
-                          )).then((value) => providerWatch.sliderMusic());
-                    },
-                    child: Card(
-                      child: ContainerShadow(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                                child: ClipRRect(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(12)),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: AssetImage(
-                                          "images/playList_music_2.jpg")),
-                                  // borderRadius: BorderRadius.circular(20),
-                                ),
-                                width: 50,
-                                height: 120,
-                                // child: Image.asset(
-                                //   "images/playList_music_2.jpg",
-                                //   fit: BoxFit.cover,
-                                // ),
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MusicScreen(
+                                songs: providerRead.songs,
                               ),
-                            )),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: ListTile(
-                                title: Text(
-                                  "${item.data![index].title}",
-                                  maxLines: 2,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                            )).then((value) => providerWatch.sliderMusic());
+                      },
+                      child: Card(
+                        child: ContainerShadow(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                  child: ClipRRect(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12)),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: AssetImage(
+                                            "images/playList_music_2.jpg")),
+                                    // borderRadius: BorderRadius.circular(20),
                                   ),
+                                  width: 50,
+                                  height: 120,
+                                  // child: Image.asset(
+                                  //   "images/playList_music_2.jpg",
+                                  //   fit: BoxFit.cover,
+                                  // ),
                                 ),
-                                // subtitle: Text(
-                                //   "${item.data![index].}",
-                                //   style: TextStyle(
-                                //     fontWeight: FontWeight.bold,
-                                //   ),
-                                // ),
+                              )),
+                              SizedBox(
+                                width: 20,
                               ),
-                            ),
-                          ],
+                              Expanded(
+                                flex: 2,
+                                child: ListTile(
+                                  title: Text(
+                                    "${item.data![index].title}",
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  // subtitle: Text(
+                                  //   "${item.data![index].}",
+                                  //   style: TextStyle(
+                                  //     fontWeight: FontWeight.bold,
+                                  //   ),
+                                  // ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }),
-                separatorBuilder: (context, index) => Divider(),
-                itemCount: item.data!.length);
-          }),
+                    );
+                  }),
+                  separatorBuilder: (context, index) => Divider(),
+                  itemCount: item.data!.length);
+            }),
+      ),
     );
   }
 }

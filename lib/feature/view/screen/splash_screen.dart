@@ -75,7 +75,7 @@ class _SplashScreenState extends State<SplashScreen>
               // Text("welcam"),
               AnimatedOpacity(
                 child: Text(
-                  "Music App",
+                  "Musicano App",
                   style: TextStyle(
                       color: Colors.grey.shade800,
                       fontSize: 25,

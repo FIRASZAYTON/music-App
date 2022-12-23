@@ -32,29 +32,24 @@ class _PageViewScreenState extends State<PageViewScreen> {
     var tabIndex = InboardingModel.tab;
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
-      floatingActionButton: ChangeNotifierProvider(
-        create: (context) => ViewModel(),
-        child: Opacity(
+      floatingActionButton: Opacity(
           alwaysIncludeSemantics: true,
           opacity: isCurrentIndex == 2 ? 1 : 0,
           child: Container(
-              margin: EdgeInsets.all(8),
-              // duration: Duration(seconds: 3),
-              decoration: BoxDecoration(
-                  color: Colors.amber,
-                  borderRadius: BorderRadiusDirectional.circular(12)),
-              child: Consumer<ViewModel>(
-                builder: (context, value, child) => IconButton(
-                  onPressed: () async {
-                    value.setDataInSharedPrefrences();
-                    context.read<ViewModel>().requestStoragePermission(context);
-                  },
-                  icon: Icon(Icons.start_sharp),
-                  color: Colors.black87,
-                ),
-              )),
-        ),
-      ),
+            margin: EdgeInsets.all(8),
+            // duration: Duration(seconds: 3),
+            decoration: BoxDecoration(
+                color: Colors.amber,
+                borderRadius: BorderRadiusDirectional.circular(12)),
+            child: IconButton(
+              onPressed: () async {
+                context.read<ViewModel>().setDataInSharedPrefrences();
+                context.read<ViewModel>().requestStoragePermission(context);
+              },
+              icon: Icon(Icons.start_sharp),
+              color: Colors.black87,
+            ),
+          )),
       backgroundColor: Colors.grey.withOpacity(0.2),
       body: Stack(children: [
         CustomPaint(
@@ -85,6 +80,9 @@ class _PageViewScreenState extends State<PageViewScreen> {
                               fit: BoxFit.fill,
                               width: 350,
                               height: 350,
+                            ),
+                            SizedBox(
+                              height: 10,
                             ),
                             Column(
                               children: [
