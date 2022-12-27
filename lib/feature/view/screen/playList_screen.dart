@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 import 'package:ui_screen_project/feature/view/screen/music_screen.dart';
 import 'package:ui_screen_project/feature/view/widget/container_shadow.dart';
 import 'package:ui_screen_project/feature/viewModel/view_model.dart';
-
-import '../widget/toast.dart';
 
 class PlayList extends StatelessWidget {
   PlayList({super.key});
@@ -15,7 +14,7 @@ class PlayList extends StatelessWidget {
     var providerRead = context.read<ViewModel>();
     var providerWatch = context.watch<ViewModel>();
     return Scaffold(
-      backgroundColor: Colors.grey[400],
+      backgroundColor: Colors.grey[300],
       // appBar: AppBar(
       //   backgroundColor: Colors.transparent.withOpacity(0.5),
       //   centerTitle: true,
@@ -64,6 +63,7 @@ class PlayList extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) => MusicScreen(
+                                index: index,
                                 songs: providerRead.songs,
                               ),
                             )).then((value) => providerWatch.sliderMusic());
@@ -99,6 +99,23 @@ class PlayList extends StatelessWidget {
                               Expanded(
                                 flex: 2,
                                 child: ListTile(
+                                  trailing: IconButton(
+                                      icon: providerRead
+                                              .isADD(item.data![index].title)
+                                          ? Icon(
+                                              FontAwesomeIcons.solidHeart,
+                                              color: Colors.red,
+                                              size: 28,
+                                            )
+                                          : Icon(
+                                              FontAwesomeIcons.heart,
+                                              color: Colors.red,
+                                              size: 28,
+                                            ),
+                                      onPressed: () {
+                                        providerRead.addMusicTofavorit(
+                                            item.data![index].title);
+                                      }),
                                   title: Text(
                                     "${item.data![index].title}",
                                     maxLines: 2,

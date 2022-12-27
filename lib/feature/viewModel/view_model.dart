@@ -9,6 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../view/screen/playList_screen.dart';
 
 class ViewModel extends ChangeNotifier {
+  bool isAdd = false;
+  List<String> songFavorite = [];
+  bool? addToFavoriteBool = false;
   final OnAudioQuery audioQuery = OnAudioQuery();
   List<SongModel> songs = [];
   List<FileSystemEntity> arraySongs = [];
@@ -22,6 +25,7 @@ class ViewModel extends ChangeNotifier {
   Duration duration = Duration.zero;
 
   bool? repeat;
+  List<String?> allSongsInFavoriteStorage = [];
   bool? playing = false;
   bool? loop = false;
   bool? shuffle = false;
@@ -31,6 +35,7 @@ class ViewModel extends ChangeNotifier {
     print("repeat");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('pageView', true);
+
     notifyListeners();
   }
 
@@ -39,6 +44,55 @@ class ViewModel extends ChangeNotifier {
     repeat = prefs.getBool('pageView');
     print(repeat);
     notifyListeners();
+  }
+
+  void setFavoriteInSharedPrefrences(List<SongModel> son) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('addToFavorite', [son[currentIndex].title]);
+    addToFavoriteBool = true;
+    print(son[currentIndex].title);
+    notifyListeners();
+  }
+
+  void removeFavoriteFromSharedPrefrences() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('addToFavorite');
+    addToFavoriteBool = false;
+
+    print("remoove");
+    notifyListeners();
+  }
+
+  void getSongsFavorite() async {
+    final prefs = await SharedPreferences.getInstance();
+    allSongsInFavoriteStorage = prefs.getStringList('addToFavorite')!;
+
+    print("${allSongsInFavoriteStorage}sttttttttttttttttttttttttt");
+    notifyListeners();
+  }
+
+  void addMusicTofavorit(String w) async {
+    isAdd = !songFavorite.contains(w);
+    if (isAdd) {
+      songFavorite.add(w);
+      print("add");
+
+      // setFavoriteInSharedPrefrences(son);
+
+      // addToFavorit = true;
+    } else {
+      songFavorite.remove(w);
+      print("remove");
+
+      // addToFavorit = false;
+      // removeFavoriteFromSharedPrefrences();
+    }
+    notifyListeners();
+  }
+
+  bool isADD(String a) {
+    isAdd = songFavorite.contains(a);
+    return isAdd;
   }
 
   void playPauseAudio(bool change) async {
@@ -57,7 +111,7 @@ class ViewModel extends ChangeNotifier {
 
   void loopMode(bool change) async {
     if (change) {
-      audioPlayerStorage.setLoopMode(LoopMode.off);
+      audioPlayerStorage.setLoopMode(LoopMode.one);
       loop = true;
     } else {
       audioPlayerStorage.setLoopMode(LoopMode.all);
@@ -123,15 +177,6 @@ class ViewModel extends ChangeNotifier {
               (route) => false);
         });
       }
-    }
-    notifyListeners();
-  }
-
-  void addMusicTofavorit(bool add) {
-    if (add) {
-      addToFavorit = true;
-    } else {
-      addToFavorit = false;
     }
     notifyListeners();
   }

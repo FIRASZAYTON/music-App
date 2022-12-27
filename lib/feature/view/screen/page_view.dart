@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import 'package:ui_screen_project/feature/view/screen/playList_screen.dart';
 
 import '../../viewModel/view_model.dart';
 import '../widget/custom_Painter.dart';
@@ -29,7 +28,7 @@ class _PageViewScreenState extends State<PageViewScreen> {
   @override
   Widget build(BuildContext context) {
     final PageController _pageController = PageController();
-    var tabIndex = InboardingModel.tab;
+    List<InboardingModel> tabIndex = InboardingModel.tab;
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
       floatingActionButton: Opacity(
@@ -109,9 +108,9 @@ class _PageViewScreenState extends State<PageViewScreen> {
                                 // mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
                                   for (int i = 0; i < tabIndex.length; i++)
-                                    Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: DotIndecator(
+                                    : const EdgeInsets.all(4.0),
+                                        child: DoPadding(
+                                        paddingtIndecator(
                                           isSelect: i == isCurrentIndex,
                                         )),
                                 ]),
